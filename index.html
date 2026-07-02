@@ -3,85 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logistics & Shipment Tracker</title>
+    <title>Global Supply Chain & Logistics Board</title>
     <style>
         :root {
-            --primary: #1e293b;
-            --secondary: #0ea5e9;
+            --primary: #0f172a;
+            --secondary: #0284c7;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
-            --bg: #f8fafc;
+            --bg: #f1f5f9;
             --card: #ffffff;
-            --text: #334155;
+            --text: #1e293b;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 20px; line-height: 1.5; }
-        header { max-width: 1400px; margin: 0 auto 20px auto; display: flex; justify-content: space-between; align-items: center; background: var(--primary); padding: 20px; color: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
-        h1 { font-size: 1.5rem; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 24px; }
         
-        .main-container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 320px 1fr; gap: 20px; }
-        .sidebar { background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgb(0 0 0 / 0.1); height: fit-content; }
-        .content { background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgb(0 0 0 / 0.1); overflow-x: auto; }
+        header { max-width: 1600px; margin: 0 auto 24px auto; display: flex; justify-content: space-between; align-items: center; background: var(--primary); padding: 20px 32px; color: white; border-radius: 12px; }
+        h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.025em; }
         
-        h2 { font-size: 1.1rem; margin-bottom: 15px; color: var(--primary); display: flex; align-items: center; justify-content: space-between; }
-        .form-group { margin-bottom: 12px; }
-        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: #64748b; }
-        input, select, textarea { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; }
-        input:focus, select:focus, textarea:focus { outline: 2px solid var(--secondary); }
+        .dashboard-grid { max-width: 1600px; margin: 0 auto; display: grid; grid-template-columns: 340px 1fr; gap: 24px; }
+        .sidebar { background: var(--card); padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); height: fit-content; }
+        .main-panel { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+        .content-card { background: var(--card); padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         
-        button { width: 100%; padding: 10px; background: var(--secondary); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 10px; }
-        button:hover { background: #0284c7; }
+        h2 { font-size: 1.1rem; margin-bottom: 16px; color: var(--primary); font-weight: 600; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
+        
+        .form-group { margin-bottom: 14px; }
+        label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; }
+        input, select { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; color: var(--text); }
+        input:focus, select:focus { outline: 2px solid var(--secondary); border-color: transparent; }
+        
+        button { width: 100%; padding: 12px; background: var(--secondary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 8px; font-size: 0.9rem; }
+        button:hover { background: #0369a1; }
         .btn-success { background: var(--success); }
         .btn-success:hover { background: #059669; }
         
-        .custom-fields-section { margin-top: 20px; padding-top: 20px; border-top: 2px dashed #e2e8f0; }
-        
+        .table-wrapper { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
-        th { background: #f1f5f9; padding: 12px; font-weight: 600; color: #475569; border-bottom: 2px solid #cbd5e1; white-space: nowrap; }
-        td { padding: 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; white-space: nowrap; }
+        th { background: #f8fafc; padding: 14px; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0; white-space: nowrap; }
+        td { padding: 14px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; white-space: nowrap; }
         tr:hover { background-color: #f8fafc; }
         
-        .status-badge { padding: 4px 8px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; display: inline-block; }
-        .status-invoice { background: #e0f2fe; color: #0369a1; }
-        .status-deposit { background: #fef3c7; color: #b45309; }
-        .status-transit { background: #dbeafe; color: #1d4ed8; }
-        .status-customs { background: #f3e8ff; color: #6b21a8; }
-        .status-warehouse { background: #d1fae5; color: #065f46; }
+        .status-badge { padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        .status-invoice { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+        .status-deposit { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+        .status-transit { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .status-customs { background: #faf5ff; color: #6b21a8; border: 1px solid #e9d5ff; }
+        .status-warehouse { background: #f0fdfa; color: #115e59; border: 1px solid #99f6e4; }
         
-        .actions-cell { display: flex; gap: 5px; }
-        .btn-table { padding: 4px 8px; font-size: 0.75rem; width: auto; margin: 0; }
-        .btn-delete { background: var(--danger); }
-        .btn-delete:hover { background: #b91c1c; }
-        
-        .stats-bar { display: flex; gap: 15px; }
-        .stat-pill { background: rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; }
+        .log-container { max-height: 220px; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; }
+        .log-item { font-size: 0.8rem; padding: 6px 0; border-bottom: 1px dashed #e2e8f0; display: flex; justify-content: space-between; }
+        .log-item:last-child { border-bottom: none; }
+        .log-timestamp { color: #94a3b8; font-family: monospace; }
+
+        .action-btns { display: flex; gap: 6px; }
+        .btn-sm { padding: 6px 10px; font-size: 0.75rem; width: auto; margin: 0; }
+        .btn-danger { background: var(--danger); }
+        .btn-danger:hover { background: #dc2626; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Global Logistics & Shipment Tracker</h1>
-        <div class="stats-bar">
-            <div class="stat-pill">Total Shipments: <span id="total-count">0</span></div>
-        </div>
+        <h1>Global Supply Chain & Logistics Board</h1>
+        <div>Active Shipments: <span id="total-count" style="font-weight:700; color:var(--success);">0</span></div>
     </header>
 
-    <div class="main-container">
-        <!-- LEFT COLUMN: INPUT FORM & CUSTOMISATION -->
+    <div class="dashboard-grid">
+        <!-- SIDEBAR: DATA ENTRY -->
         <div class="sidebar">
-            <h2>Log New Shipment</h2>
+            <h2 id="form-title">Log New Shipment</h2>
             <form id="shipment-form">
                 <input type="hidden" id="edit-id">
                 
                 <div class="form-group">
-                    <label>Purchase Order (PO) #</label>
-                    <input type="text" id="po-num" required placeholder="e.g. PO-2026-001">
+                    <label>PO Number *</label>
+                    <input type="text" id="po-num" required placeholder="e.g. PO-2026-88">
                 </div>
                 <div class="form-group">
-                    <label>Proforma Invoice (PI) #</label>
-                    <input type="text" id="pi-num" placeholder="e.g. PI-9982">
+                    <label>PI Number</label>
+                    <input type="text" id="pi-num" placeholder="e.g. PI-441">
                 </div>
                 <div class="form-group">
                     <label>Deposit Date</label>
@@ -89,112 +91,98 @@
                 </div>
                 <div class="form-group">
                     <label>Deposit Amount ($)</label>
-                    <input type="number" id="deposit-amount" placeholder="0.00" step="0.01">
+                    <input type="number" id="deposit-amount" placeholder="0.00">
                 </div>
                 <div class="form-group">
-                    <label>Vessel / Air Provider</label>
-                    <input type="text" id="carrier" placeholder="e.g. Maersk / DHL">
+                    <label>Carrier / Vessel Name</label>
+                    <input type="text" id="carrier" placeholder="e.g. MSC / FedEx">
                 </div>
                 <div class="form-group">
-                    <label>Tracking Details</label>
-                    <input type="text" id="tracking-info" placeholder="Container / Master AWB">
+                    <label>Tracking / HBL / AWB</label>
+                    <input type="text" id="tracking-info" placeholder="Tracking reference">
                 </div>
                 <div class="form-group">
-                    <label>COO Authorisation Status</label>
+                    <label>COO Authorization</label>
                     <select id="coo-status">
                         <option value="Pending">Pending Review</option>
-                        <option value="Approved">Approved / Signed</option>
+                        <option value="Approved">Approved</option>
                         <option value="Not Required">Not Required</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Current Milestone Stage</label>
+                    <label>Milestone Step</label>
                     <select id="shipment-stage">
                         <option value="invoice">1. Invoice Generated</option>
                         <option value="deposit">2. Deposit Paid</option>
-                        <option value="transit">3. In Transit (Sea/Air)</option>
+                        <option value="transit">3. In Transit</option>
                         <option value="customs">4. Customs Clearance</option>
                         <option value="warehouse">5. Landed in Warehouse</option>
                     </select>
                 </div>
 
-                <!-- Dynamic Custom Fields Container -->
                 <div id="dynamic-inputs-container"></div>
 
-                <button type="submit" id="submit-btn" class="btn-success">Save Shipment</button>
+                <button type="submit" id="submit-btn" class="btn-success">Save Shipment Record</button>
                 <button type="button" id="cancel-btn" style="display:none; background:#64748b;">Cancel Edit</button>
             </form>
 
-            <!-- CUSTOMISATION PANEL -->
-            <div class="custom-fields-section">
-                <h2>Customise Tracker</h2>
-                <p style="font-size:0.75rem; color:#64748b; margin-bottom:10px;">Need tracking milestones or notes unique to your workflow? Add a custom text column below:</p>
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px dashed #e2e8f0;">
+                <h2>Add Custom Column</h2>
                 <div class="form-group">
-                    <label>New Column Name</label>
-                    <input type="text" id="new-column-name" placeholder="e.g. Customs Broker Ref">
+                    <input type="text" id="new-column-name" placeholder="e.g. Port of Loading">
                 </div>
-                <button type="button" id="add-column-btn">＋ Add Custom Column</button>
+                <button type="button" id="add-column-btn" style="background:#475569;">＋ Add Column</button>
             </div>
         </div>
 
-        <!-- RIGHT COLUMN: MAIN TRACKING BOARD -->
-        <div class="content">
-            <h2>Active Shipment Board</h2>
-            <div style="overflow-x: auto;">
-                <table id="shipment-table">
-                    <thead>
-                        <tr id="table-header-row">
-                            <th>PO #</th>
-                            <th>PI #</th>
-                            <th>Deposit Date</th>
-                            <th>Deposit Amt</th>
-                            <th>Carrier/Vessel</th>
-                            <th>Tracking Info</th>
-                            <th>COO Status</th>
-                            <th>Current Stage</th>
-                            <!-- Custom columns inject here -->
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="shipment-list">
-                        <!-- Data rows inject here -->
-                    </tbody>
-                </table>
+        <!-- MAIN OVERVIEW PANELS -->
+        <div class="main-panel">
+            <!-- MULTIPLE SHIPMENTS BOARD -->
+            <div class="content-card">
+                <h2>Active Shipment Tracking Board (All Shipments)</h2>
+                <div class="table-wrapper">
+                    <table id="shipment-table">
+                        <thead>
+                            <tr id="table-header-row">
+                                <th>PO #</th>
+                                <th>PI #</th>
+                                <th>Deposit Date</th>
+                                <th>Deposit Amt</th>
+                                <th>Carrier</th>
+                                <th>Tracking Reference</th>
+                                <th>COO Status</th>
+                                <th>Current Status</th>
+                                <!-- Custom Columns Injected Here -->
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shipment-list"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- AUDIT HISTORY TRAIL LOGS -->
+            <div class="content-card">
+                <h2>System Audit Trail & Step Logs (Latest Changes First)</h2>
+                <div class="log-container" id="log-container">
+                    <div style="color:#94a3b8; font-size:0.85rem; text-align:center; padding: 20px;">No operational status changes logged yet.</div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // State Management
-        let shipments = JSON.parse(localStorage.getItem('shipments')) || [];
-        let customColumns = JSON.parse(localStorage.getItem('customColumns')) || [];
+        let shipments = JSON.parse(localStorage.getItem('shipments_v2')) || [];
+        let customColumns = JSON.parse(localStorage.getItem('customColumns_v2')) || [];
+        let historyLogs = JSON.parse(localStorage.getItem('historyLogs_v2')) || [];
 
-        // DOM elements
         const form = document.getElementById('shipment-form');
         const shipmentList = document.getElementById('shipment-list');
         const headerRow = document.getElementById('table-header-row');
         const dynamicInputsContainer = document.getElementById('dynamic-inputs-container');
+        const logContainer = document.getElementById('log-container');
         const totalCountSpan = document.getElementById('total-count');
 
-        // Initial Layout Render
         function init() {
             renderHeaders();
             renderDynamicFormFields();
-            renderTableData();
-        }
-
-        // Render table headers structurally incorporating custom fields
-        function renderHeaders() {
-            headerRow.innerHTML = `
-                <th>PO #</th>
-                <th>PI #</th>
-                <th>Deposit Date</th>
-                <th>Deposit Amt</th>
-                <th>Carrier/Vessel</th>
-                <th>Tracking Info</th>
-                <th>COO Status</th>
-                <th>Current Stage</th>
-            `;
-            customColumns.forEach(col => {
-                const th = document.createElement('th');
-                th.innerText = col;
