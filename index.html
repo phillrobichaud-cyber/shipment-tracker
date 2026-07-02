@@ -30,9 +30,6 @@
         h2 { font-size: 1.1rem; margin-bottom: 16px; color: var(--primary); font-weight: 600; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
         
         .form-group { margin-bottom: 14px; }
-        .currency-input-group { display: flex; gap: 8px; }
-        .currency-input-group select { width: 100px; flex-shrink: 0; background-color: #f8fafc; }
-        
         label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; }
         input, select { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; color: var(--text); }
         input:focus, select:focus { outline: 2px solid var(--secondary); border-color: transparent; }
@@ -48,12 +45,15 @@
         td { padding: 14px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; white-space: nowrap; }
         tr:hover { background-color: #f8fafc; }
         
-        .status-badge { padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
-        .status-invoice { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
-        .status-deposit { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
-        .status-transit { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
-        .status-customs { background: #faf5ff; color: #6b21a8; border: 1px solid #e9d5ff; }
-        .status-warehouse { background: #f0fdfa; color: #115e59; border: 1px solid #99f6e4; }
+        /* Visual Step Tracker styling */
+        .step-dots-container { display: flex; gap: 4px; align-items: center; }
+        .step-dot { width: 12px; height: 12px; border-radius: 50%; background-color: #cbd5e1; border: 1px solid #94a3b8; display: inline-block; position: relative; cursor: default; }
+        .step-dot.active { background-color: var(--secondary); border-color: #0369a1; }
+        .step-dot.completed { background-color: var(--success); border-color: #059669; }
+        
+        /* Simple clean tooltip text for step dots */
+        .step-dot::after { content: attr(data-title); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #1e293b; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; margin-bottom: 6px; font-family: sans-serif; font-weight: normal; z-index: 10; }
+        .step-dot:hover::after { opacity: 1; }
         
         .log-container { max-height: 220px; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; }
         .log-item { font-size: 0.8rem; padding: 6px 0; border-bottom: 1px dashed #e2e8f0; display: flex; justify-content: space-between; }
@@ -93,22 +93,27 @@
                     <input type="text" id="manufacturer" placeholder="e.g. ACME Manufacturing Ltd">
                 </div>
                 <div class="form-group">
+                    <label>Transaction Currency</label>
+                    <select id="deposit-currency">
+                        <option value="AUD">AUD ($)</option>
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="GBP">GBP (£)</option>
+                        <option value="CNY">CNY (¥)</option>
+                        <option value="NZD">NZD ($)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Invoice Total Amount</label>
+                    <input type="number" id="invoice-total" placeholder="0.00" step="0.01">
+                </div>
+                <div class="form-group">
                     <label>Deposit Date</label>
                     <input type="date" id="deposit-date">
                 </div>
                 <div class="form-group">
-                    <label>Deposit Amount & Currency</label>
-                    <div class="currency-input-group">
-                        <select id="deposit-currency">
-                            <option value="AUD">AUD ($)</option>
-                            <option value="USD">USD ($)</option>
-                            <option value="EUR">EUR (€)</option>
-                            <option value="GBP">GBP (£)</option>
-                            <option value="CNY">CNY (¥)</option>
-                            <option value="NZD">NZD ($)</option>
-                        </select>
-                        <input type="number" id="deposit-amount" placeholder="0.00" step="0.01">
-                    </div>
+                    <label>Deposit Amount</label>
+                    <input type="number" id="deposit-amount" placeholder="0.00" step="0.01">
                 </div>
                 <div class="form-group">
                     <label>Carrier / Vessel Name</label>
@@ -127,7 +132,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Milestone Step</label>
+                    <label>Current Logistics Step</label>
                     <select id="shipment-stage">
                         <option value="invoice">1. Invoice Generated</option>
                         <option value="deposit">2. Deposit Paid</option>
@@ -164,21 +169,10 @@
                                 <th>PO #</th>
                                 <th>PI #</th>
                                 <th>Manufacturer</th>
+                                <th>Invoice Total</th>
                                 <th>Deposit Date</th>
                                 <th>Deposit Amt</th>
                                 <th>Carrier</th>
                                 <th>Tracking Reference</th>
                                 <th>COO Status</th>
-                                <th>Current Status</th>
-                                <!-- Custom Columns Injected Here -->
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="shipment-list"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- AUDIT HISTORY TRAIL LOGS -->
-            <div class="content-card">
-                <h2>System Audit Trail & Step Logs (Latest Changes First)</h2>
+                                <th>Progress Steps</th>
