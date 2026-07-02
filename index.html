@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Supply Chain & Logistics Board</title>
+    <title>Logistics Progress Tracker</title>
     <style>
         :root {
             --primary: #0f172a;
@@ -11,7 +11,7 @@
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
-            --bg: #f1f5f9;
+            --bg: #f8fafc;
             --card: #ffffff;
             --text: #1e293b;
         }
@@ -22,13 +22,19 @@
         header { max-width: 1600px; margin: 0 auto 24px auto; display: flex; justify-content: space-between; align-items: center; background: var(--primary); padding: 20px 32px; color: white; border-radius: 12px; }
         h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.025em; }
         
+        /* Layout Grid */
         .dashboard-grid { max-width: 1600px; margin: 0 auto; display: grid; grid-template-columns: 340px 1fr; gap: 24px; }
         .sidebar { background: var(--card); padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); height: fit-content; }
         .main-panel { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
         .content-card { background: var(--card); padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         
-        h2 { font-size: 1.1rem; margin-bottom: 16px; color: var(--primary); font-weight: 600; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
+        h2 { font-size: 1.1rem; margin-bottom: 16px; color: var(--primary); font-weight: 600; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
         
+        /* Filter Controls */
+        .filter-container { display: flex; gap: 10px; align-items: center; font-size: 0.85rem; }
+        .filter-btn { padding: 6px 12px; border: 1px solid #cbd5e1; background: #fff; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.8rem; width: auto; margin: 0; color: var(--text); }
+        .filter-btn.active { background: var(--secondary); color: white; border-color: var(--secondary); }
+
         .form-group { margin-bottom: 14px; }
         .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
         .checkbox-group input[type="checkbox"] { width: auto; cursor: pointer; transform: scale(1.1); }
@@ -43,27 +49,35 @@
         .btn-success { background: var(--success); }
         .btn-success:hover { background: #059669; }
         
-        .table-wrapper { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
-        th { background: #f8fafc; padding: 14px; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0; white-space: nowrap; }
-        td { padding: 14px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; white-space: nowrap; }
-        tr:hover { background-color: #f8fafc; }
+        /* Visual Progress Pipeline Cards */
+        .shipment-progress-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .shipment-progress-card:hover { border-color: #cbd5e1; }
         
-        .step-dots-container { display: flex; gap: 6px; align-items: center; }
-        .step-dot { width: 14px; height: 14px; border-radius: 50%; background-color: #cbd5e1; border: 1px solid #94a3b8; display: inline-block; position: relative; cursor: default; }
-        .step-dot.active { background-color: var(--secondary); border-color: #0369a1; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2); }
-        .step-dot.completed { background-color: var(--success); border-color: #059669; }
-        
-        .step-dot::after { content: attr(data-title); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #1e293b; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; margin-bottom: 6px; font-family: sans-serif; font-weight: normal; z-index: 10; }
-        .step-dot:hover::after { opacity: 1; }
-        
-        .log-container { max-height: 220px; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; }
-        .log-item { font-size: 0.8rem; padding: 6px 0; border-bottom: 1px dashed #e2e8f0; display: flex; justify-content: space-between; }
-        .log-item:last-child { border-bottom: none; }
-        .log-timestamp { color: #94a3b8; font-family: monospace; }
+        .card-meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; font-size: 0.85rem; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #f1f5f9; }
+        .meta-item strong { color: #64748b; font-size: 0.75rem; text-transform: uppercase; display: block; margin-bottom: 2px; }
+        .meta-item span { color: var(--primary); font-weight: 600; }
 
-        .action-btns { display: flex; gap: 6px; }
-        .btn-sm { padding: 6px 10px; font-size: 0.75rem; width: auto; margin: 0; }
+        /* The Visual Timeline Chart Map */
+        .progress-pipeline { display: flex; justify-content: space-between; position: relative; margin: 20px 10px 10px 10px; }
+        .progress-pipeline::before { content: ''; position: absolute; top: 15px; left: 0; width: 100%; height: 4px; background-color: #e2e8f0; z-index: 1; }
+        .pipeline-bg-line { position: absolute; top: 15px; left: 0; height: 4px; background-color: var(--success); z-index: 2; transition: width 0.4s ease; width: 0%; }
+        
+        .pipeline-step { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; flex: 1; }
+        .step-node { width: 34px; height: 34px; border-radius: 50%; background-color: #fff; border: 3px solid #cbd5e1; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: #94a3b8; transition: all 0.3s ease; box-shadow: 0 0 0 4px #fff; }
+        .step-label { margin-top: 8px; font-size: 0.75rem; font-weight: 600; color: #64748b; text-align: center; white-space: nowrap; }
+        
+        /* Progress States */
+        .pipeline-step.completed .step-node { border-color: var(--success); background-color: var(--success); color: white; }
+        .pipeline-step.completed .step-label { color: var(--success); }
+        
+        .pipeline-step.active .step-node { border-color: var(--secondary); background-color: white; color: var(--secondary); box-shadow: 0 0 0 4px #fff, 0 0 0 7px rgba(2, 132, 199, 0.2); }
+        .pipeline-step.active .step-label { color: var(--secondary); font-weight: 700; }
+
+        .card-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .po-title-badge { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+        
+        .action-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; padding-top: 12px; border-top: 1px solid #f1f5f9; }
+        .btn-sm { padding: 6px 14px; font-size: 0.8rem; width: auto; margin: 0; }
         .btn-danger { background: var(--danger); }
         .btn-danger:hover { background: #dc2626; }
     </style>
@@ -71,8 +85,8 @@
 <body>
 
     <header>
-        <h1>Global Supply Chain & Logistics Board</h1>
-        <div>Active Shipments: <span id="total-count" style="font-weight:700; color:var(--success);">0</span></div>
+        <h1>Global Supply Chain & Logistics Center</h1>
+        <div>Active Tracking Pipelines: <span id="total-count" style="font-weight:700; color:var(--secondary);">0</span></div>
     </header>
 
     <div class="dashboard-grid">
@@ -139,27 +153,3 @@
                 <div class="form-group">
                     <label>COO Status</label>
                     <select id="coo-status">
-                        <option value="Pending">Pending Review</option>
-                        <option value="Approved">Approved</option>
-                        <option value="Not Required">Not Required</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Current Logistics Step</label>
-                    <select id="shipment-stage">
-                        <option value="invoice">1. Invoice Generated</option>
-                        <option value="deposit">2. Deposit Paid</option>
-                        <option value="transit">3. In Transit</option>
-                        <option value="customs">4. Customs Clearance</option>
-                        <option value="warehouse">5. Landed in Warehouse</option>
-                    </select>
-                </div>
-
-                <div id="dynamic-inputs-container"></div>
-
-                <button type="submit" id="submit-btn" class="btn-success">Save Shipment Record</button>
-                <button type="button" id="cancel-btn" style="display:none; background:#64748b;">Cancel Edit</button>
-            </form>
-
-            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px dashed #e2e8f0;">
-                <h2>Add Custom Column</h2>
